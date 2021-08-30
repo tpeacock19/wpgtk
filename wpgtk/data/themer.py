@@ -90,12 +90,13 @@ def import_theme(wallpaper, json_file, theme=False):
         color_list = list(theme["colors"].values())
     else:
         try:
-            color_list = color.get_color_list(json_file, True)
+            theme = pywal.theme.parse(filename)
+            color_list = list(theme["colors"].values())
         except IOError:
             logging.error("file does not exist")
             return
 
-    color.write_colors(wallpaper, color_list)
+    color.write_theme(wallpaper, theme)
     sample.create_sample(color_list, files.get_sample_path(wallpaper))
     logging.info("applied %s to %s" % (filename, wallpaper))
 
@@ -105,7 +106,7 @@ def set_fallback_theme(wallpaper):
     theme = pywal.theme.file("random")
 
     color_list = list(theme["colors"].values())
-    color.write_colors(wallpaper, color_list)
+    color.write_theme(wallpaper, theme)
     sample.create_sample(color_list, files.get_sample_path(wallpaper))
 
     return color_list
@@ -117,7 +118,7 @@ def set_pywal_theme(theme_name, light):
     theme = pywal.theme.file(theme_name, light)
 
     color_list = list(theme["colors"].values())
-    color.write_colors(current, color_list)
+    color.write_theme(current, theme)
     sample.create_sample(color_list, files.get_sample_path(current))
 
     set_theme(current, current)

@@ -51,7 +51,7 @@ def get_color_list(filename, json=False):
         if is_auto_adjust or is_light_theme:
             color_list = auto_adjust(color_list)
         sample.create_sample(color_list, files.get_sample_path(filename))
-        write_colors(filename, color_list)
+        write_theme(filename, theme)
 
     return color_list
 
@@ -74,6 +74,46 @@ def shuffle_colors(colors):
     fg = [colors[8]] + [c[1] for c in color_group] + [colors[15]]
 
     return bg + fg
+
+
+def wpg_theme_to_dict(theme, wallpaper):
+    """Convert pywal theme to pywal format."""
+    return {
+        "wallpaper": wallpaper,
+        "alpha": pywal.util.Color.alpha_num,
+        "special": {
+            "background": theme["special"]["background"],
+            "foreground": theme["special"]["foreground"],
+            "cursor": theme["special"]["cursor"],
+        },
+        "colors": {
+            "color0": theme["color"][0],
+            "color1": theme["color"][1],
+            "color2": theme["color"][2],
+            "color3": theme["color"][3],
+            "color4": theme["color"][4],
+            "color5": theme["color"][5],
+            "color6": theme["color"][6],
+            "color7": theme["color"][7],
+            "color8": theme["color"][8],
+            "color9": theme["color"][9],
+            "color10": theme["color"][10],
+            "color11": theme["color"][11],
+            "color12": theme["color"][12],
+            "color13": theme["color"][13],
+            "color14": theme["color"][14],
+            "color15": theme["color"][15],
+        },
+    }
+
+
+def write_theme(img, theme):
+    """write changes to a cache file to persist customizations"""
+    full_path = os.path.join(WALL_DIR, img)
+    color_dict = wpg_theme_to_dict(theme, full_path)
+    cache_file = files.get_cache_path(img)
+
+    pywal.export.color(color_dict, "json", cache_file)
 
 
 def write_colors(img, color_list):
